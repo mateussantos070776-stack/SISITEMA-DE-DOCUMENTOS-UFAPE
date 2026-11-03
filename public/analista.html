@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel do Analista - Gestão de Documentos</title>
+  <style>
+    :root {
+      --bg-color: #f4f5f7;
+      --card-bg: #ffffff;
+      --text-main: #333333;
+      --border-color: #e5e7eb;
+      --primary: #1f2937;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: var(--card-bg);
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border-color);
+    }
+
+    .logo-container {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .logo-container img {
+      max-width: 60px;
+      height: auto;
+    }
+
+    h2 {
+      color: var(--primary);
+      margin-top: 0;
+      border-bottom: 2px solid #f3f4f6;
+      padding-bottom: 10px;
+      text-align: center;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    button.btn-refresh {
+      background-color: #4b5563;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button.btn-refresh:hover {
+      background-color: #374151;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background-color: #ffffff;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    th {
+      background-color: #f9fafb;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    tr:hover {
+      background-color: #f9fafb;
+    }
+
+    input.input-obs {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 13px;
+      margin-bottom: 6px;
+      box-sizing: border-box;
+    }
+
+    .acoes-btns {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .btn-anexar {
+      background-color: #4b5563;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .btn-anexar:hover {
+      background-color: #374151;
+    }
+
+    .btn-aprovar {
+      background-color: #047857;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .btn-aprovar:hover {
+      background-color: #065f46;
+    }
+
+    .btn-rejeitar {
+      background-color: #b91c1c;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .btn-rejeitar:hover {
+      background-color: #991b1b;
+    }
+
+    a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-container">
+      <img src="logo.png" alt="Logo">
+    </div>
+    <h2>Painel de Análise de Documentos</h2>
+    <div class="top-bar">
+      <span>Lista completa de submissões</span>
+      <button class="btn-refresh" onclick="carregarDocumentos()">Atualizar Lista</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID / CPF</th>
+          <th>Candidato</th>
+          <th>Arquivo</th>
+          <th>Status</th>
+          <th>Observação / Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaCorpo"></tbody>
+    </table>
+  </div>
+
+  <script>
+    async function carregarDocumentos() {
+      try {
+        const res = await fetch('/api/documentos');
+        const docs = await res.json();
+        const tbody = document.getElementById('tabelaCorpo');
+        tbody.innerHTML = '';
+
+        if (docs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #666;">Nenhum documento enviado até o momento.</td></tr>`;
+          return;
+        }
+
+        docs.forEach(doc => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>
+              <b>ID:</b> ${doc.id}<br>
+              <span style="color: #666; font-size: 12px;">CPF: ${doc.cpf}</span>
+            </td>
+            <td>${doc.candidato}</td>
+            <td><a href="${doc.path}" target="_blank">${doc.nomeArquivo}</a></td>
+            <td><b style="color: ${doc.status === 'APROVADO' ? '#047857' : doc.status === 'REJEITADO' ? '#b91c1c' : '#b45309'}">${doc.status}</b></td>
+            <td>
+              <input type="text" id="obs-${doc.id}" class="input-obs" placeholder="Escreva uma observação..." value="${doc.observacao || ''}">
+              <div class="acoes-btns">
+                <button class="btn-anexar" onclick="salvarObservacao('${doc.id}')">Anexar Observação</button>
+                <button class="btn-aprovar" onclick="atualizarStatus('${doc.id}', 'APROVADO')">Aprovar</button>
+                <button class="btn-rejeitar" onclick="atualizarStatus('${doc.id}', 'REJEITADO')">Rejeitar</button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Erro ao carregar documentos:', err);
+      }
+    }
+
+    async function salvarObservacao(id) {
+      const inputObs = document.getElementById(`obs-${id}`);
+      const observacao = inputObs ? inputObs.value : '';
+
+      try {
+        const res = await fetch(`/api/documentos/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ observacao })
+        });
+
+        if (res.ok) {
+          alert('Observação anexada com sucesso!');
+          await carregarDocumentos();
+        } else {
+          alert('Erro ao anexar a observação.');
+        }
+      } catch (err) {
+        alert('Erro de conexão com o servidor.');
+      }
+    }
+
+    async function atualizarStatus(id, status) {
+      const inputObs = document.getElementById(`obs-${id}`);
+      const observacao = inputObs ? inputObs.value : '';
+
+      try {
+        const res = await fetch(`/api/documentos/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status, observacao })
+        });
+
+        if (res.ok) {
+          alert(`Documento ${status.toLowerCase()} com sucesso!`);
+          await carregarDocumentos();
+        } else {
+          alert('Erro ao atualizar o status.');
+        }
+      } catch (err) {
+        alert('Erro de conexão com o servidor.');
+      }
+    }
+
+    carregarDocumentos();
+  </script>
+</body>
+</html>
