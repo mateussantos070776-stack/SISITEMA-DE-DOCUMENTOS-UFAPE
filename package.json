@@ -1,7 +1,6 @@
 {
-  "name": "sistema-documentos",
+  "name": "ufape-teste",
   "version": "1.0.0",
-  "description": "Sistema de envio e analise de documentos",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
