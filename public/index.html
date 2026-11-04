@@ -12,22 +12,34 @@
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100vh; background: var(--page); color: var(--ink); font-family: Inter, sans-serif; }
     .auth-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-    .auth-card, .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,.05); }
+    .auth-card, .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,.05); }
     .auth-card { width: 100%; max-width: 400px; text-align: center; }
-    .app-shell { display: flex; min-height: 100vh; }
     
-    .sidebar { width: 280px; background: #071d40; color: white; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; }
+    .app-shell { display: flex; min-height: 100vh; flex-direction: row; }
+    
+    .sidebar { width: 280px; background: #071d40; color: white; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; }
     .sidebar-menu { display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
-    .menu-btn { background: transparent; border: 0; color: #cbd5e1; text-align: left; padding: 12px 15px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; transition: .2s; }
+    .menu-btn { background: transparent; border: 0; color: #cbd5e1; text-align: left; padding: 12px 15px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; transition: .2s; width: 100%; }
     .menu-btn:hover, .menu-btn.active { background: rgba(255,255,255,0.1); color: white; }
 
-    .main { flex: 1; padding: 30px; overflow-y: auto; }
+    .main { flex: 1; padding: 30px; overflow-y: auto; width: 100%; }
     label { display: block; margin: 10px 0 5px; font-weight: 700; font-size: 13px; text-align: left; }
     input[type="text"], input[type="file"] { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: #fff; }
     .btn { background: var(--blue); color: white; border: 0; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; }
-    .logout-btn { background: #fee2e2; color: #b91c1c; }
+    .logout-btn { background: #fee2e2; color: #b91c1c; margin-top: 15px; }
     .hidden { display: none !important; }
     .doc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+    /* RESPONSIVIDADE PARA TELEMÓVEIS / DISPOSITIVOS MÓVEIS */
+    @media (max-width: 768px) {
+      .app-shell { flex-direction: column; }
+      .sidebar { width: 100%; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+      .sidebar-menu { flex-direction: row; gap: 5px; margin-top: 10px; }
+      .menu-btn { font-size: 12px; padding: 8px 10px; text-align: center; }
+      .main { padding: 15px; }
+      .doc-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 20px; }
+    }
   </style>
 </head>
 <body>
@@ -52,22 +64,22 @@
     <aside class="sidebar">
       <div>
         <h2>PORTAL</h2>
-        <p style="font-size:11px; opacity:0.8; margin-bottom: 20px;">Sistema de Submissão UFAPE</p>
+        <p style="font-size:11px; opacity:0.8; margin-bottom: 10px;">Sistema de Submissão UFAPE</p>
         
         <div class="sidebar-menu">
           <button class="menu-btn active" onclick="mudarAba('envio', this)">📄 Enviar Documento</button>
-          <button class="menu-btn" onclick="mudarAba('status', this)">📊 Meus Envios (Tempo Real)</button>
+          <button class="menu-btn" onclick="mudarAba('status', this)">📊 Meus Envios</button>
         </div>
       </div>
 
-      <button class="btn logout-btn" onclick="logout()">Encerrar Sessão</button>
+      <button class="btn logout-btn" onclick="logout()">Sair</button>
     </aside>
 
     <main class="main">
       <h1>Bem-vindo(a), <span id="spanNome"></span></h1>
       
       <!-- ABA 1: ENVIO DE DOCUMENTOS -->
-      <div id="abaEnvio" class="panel" style="margin-top: 20px;">
+      <div id="abaEnvio" class="panel" style="margin-top: 15px;">
         <h3>Envio de Documentos Separados</h3>
         <p style="color: var(--muted); font-size:13px;">Envie cada ficheiro individualmente nos respetivos campos.</p>
         
@@ -96,7 +108,7 @@
       </div>
 
       <!-- ABA 2: ACOMPANHAMENTO EM TEMPO REAL -->
-      <div id="abaStatus" class="panel hidden" style="margin-top: 20px;">
+      <div id="abaStatus" class="panel hidden" style="margin-top: 15px;">
         <h3>Acompanhamento em Tempo Real</h3>
         <p style="color: var(--muted); font-size:13px;">Consulte o estado de validação de cada documento avaliado pelo analista.</p>
         <div id="statusContainer" style="margin-top: 15px;">A carregar dados...</div>
